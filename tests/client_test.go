@@ -14,7 +14,7 @@ const (
 	testNetWss  = "wss://testnet.gxchain.org"
 
 	testAccountName = "cli-wallet-test"
-	testPri         = "5KWPUCzEoyYk7HUFLtZWkJRPkcJfrNJRnhw8vJPExSjVyS8CrCp"
+	testPri         = "5JsvYffKR8n4yNfCk36KkKFCzg6vo5fdBqqDJLavSifXSV9NABo"
 	testPub         = "GXC6kMAnWk1fyjkXUWj4wA7QsnwPAURXGeRAqHDvAqTPCKkiHm8d8"
 )
 
@@ -22,7 +22,7 @@ func TestClient_Transfer(t *testing.T) {
 	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
 	require.Nil(t, err)
 
-	result, err := client.Transfer("nathan", "test transfer", "10.12345 GXC", "GXC", true)
+	result, err := client.Transfer("nathan", "123", "10.12345 GXC", "GXC", true)
 	require.NoError(t, err)
 	str, _ := json.Marshal(*result)
 	fmt.Println(string(str))

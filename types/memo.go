@@ -7,9 +7,12 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
+	"encoding/json"
 	"github.com/juju/errors"
 	"gxclient-go/transaction"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
 type Memo struct {
@@ -37,6 +40,41 @@ func (p Memo) MarshalTransaction(enc *transaction.Encoder) error {
 	}
 
 	return nil
+}
+
+func (m *Memo) UnmarshalJSON(b []byte) (err error) {
+	stringCase := struct {
+		From    PublicKey `json:"from"`
+		To      PublicKey `json:"to"`
+		Nonce   string    `json:"nonce"`
+		Message Buffer    `json:"message"`
+	}{}
+
+	uint64Case := struct {
+		From    PublicKey `json:"from"`
+		To      PublicKey `json:"to"`
+		Nonce   UInt64    `json:"nonce"`
+		Message Buffer    `json:"message"`
+	}{}
+
+	if err = json.Unmarshal(b, &uint64Case); err == nil {
+		m.From = uint64Case.From
+		m.To = uint64Case.To
+		m.Nonce = uint64Case.Nonce
+		m.Message = uint64Case.Message
+		return nil
+	}
+
+	if err = json.Unmarshal(b, &stringCase); err == nil {
+		u, err := strconv.ParseUint(stringCase.Nonce, 10, 64)
+		m.From = stringCase.From
+		m.To = stringCase.To
+		m.Nonce = UInt64(u)
+		m.Message = stringCase.Message
+		return err
+	}
+
+	return err
 }
 
 //Encrypt calculates a shared secret by the senders private key
@@ -145,4 +183,9 @@ func pad(buf []byte, length int) []byte {
 	cnt := length - len(buf)%length
 	buf = append(buf, bytes.Repeat([]byte{byte(cnt)}, cnt)...)
 	return buf
+}
+
+func GetNonce() UInt64 {
+	rand.Seed(time.Now().Unix())
+	return UInt64(rand.Uint64())
 }

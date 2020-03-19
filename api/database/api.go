@@ -86,11 +86,20 @@ func (api *API) GetAccounts(accounts ...string) ([]*types.Account, error) {
 	return ret, nil
 }
 
+func (api *API) GetAccountsByIds(ids ...string) ([]*types.Account, error) {
+	var resp []*types.Account
+	if err := api.call("get_accounts", []interface{}{ids}, &resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetAccountBalances
 // Get an account’s balances in various assets.
 func (api *API) GetAccountBalances(accountID string, assets ...string) ([]*types.AssetAmount, error) {
 	var resp []*types.AssetAmount
-	err := api.call("get_account_balances", []interface{}{accountID, assets}, &resp)
+	array := make([]string, len(assets))
+	err := api.call("get_account_balances", []interface{}{accountID, append(array, assets...)}, &resp)
 	return resp, err
 }
 
@@ -104,11 +113,22 @@ func (api *API) GetAccountsByPublicKeys(publicKeys ...string) (*[][]string, erro
 //get_key_references
 func (api *API) GetAccountsByPublicKey(publicKeys string) ([]string, error) {
 	var resp [][]string
-	err := api.call("get_key_references", []interface{}{[]string{publicKeys}}, &resp)
-	if resp == nil {
+	if err := api.call("get_key_references", []interface{}{[]string{publicKeys}}, &resp); err != nil {
 		return nil, err
 	}
-	return resp[0], err
+	if resp == nil {
+		return nil, nil
+	}
+	//Deduplication
+	var result []string
+	temp := map[string]struct{}{}
+	for _, item := range resp[0] {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result, nil
 }
 
 //lookup_asset_symbols
@@ -145,7 +165,8 @@ func (api *API) GetWitnessByAccount(accountId string) (*Witness, error) {
 // Semantically equivalent to get_account_balances, but takes a name instead of an ID.
 func (api *API) GetNamedAccountBalances(account string, assets ...string) ([]*types.AssetAmount, error) {
 	var resp []*types.AssetAmount
-	err := api.call("get_named_account_balances", []interface{}{account, assets}, &resp)
+	array := []string{}
+	err := api.call("get_named_account_balances", []interface{}{account, append(array, assets...)}, &resp)
 	return resp, err
 }
 
@@ -220,4 +241,13 @@ func (api *API) GetBlockHeader(blockNum uint32) (*BlockHeader, error) {
 	var resp BlockHeader
 	err := api.call("get_block_header", []interface{}{blockNum}, &resp)
 	return &resp, err
+}
+
+func (api *API) GetTransactionByTxid(txid string) (*types.Transaction, error) {
+	var resp *types.Transaction
+	if err := api.call("get_transaction_rows", []interface{}{txid}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

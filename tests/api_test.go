@@ -59,12 +59,14 @@ func TestApi_GetAccounts(t *testing.T) {
 	a1 := "nathan"
 	a2 := "init0"
 	accs, err := client.Database.GetAccounts(a1, a2)
+	require.Nil(t, err)
 	for _, acc := range accs {
 		str, _ := json.Marshal(*acc)
 		fmt.Println(string(str))
 	}
 
 	acc, err := client.Database.GetAccount("t")
+	require.Nil(t, err)
 	str, _ := json.Marshal(*acc)
 	fmt.Println(string(str))
 }
@@ -137,6 +139,10 @@ func TestApi_GetAssets(t *testing.T) {
 func TestApi_Simple(t *testing.T) {
 	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
 	require.Nil(t, err)
+
+	tx, err := client.Database.GetTransactionByTxid("647524E8668D3484A764009B0AC90394CF64ED3C")
+	str1, _ := json.Marshal(tx)
+	fmt.Println(string(str1))
 
 	s, err := client.Database.GetStakingPrograms()
 	fmt.Println(s)

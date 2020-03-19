@@ -179,7 +179,7 @@ func (client *Client) Transfer(to, memo, amountAsset, feeSymbol string, broadcas
 
 	memoOb.From = *keys[0]
 	memoOb.To = toAccount.Options.MemoKey
-	memoOb.Nonce = 0 //types.UInt64(rand.Int63())
+	memoOb.Nonce = types.GetNonce()
 	if len(memo) > 0 {
 		err := memoOb.Encrypt(client.memoPriKey, memo)
 		if err != nil {
