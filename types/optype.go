@@ -8,7 +8,7 @@ const (
 	LimitOrderCancelOpType
 	CallOrderUpdateOpType
 	FillOrderOpType
-	AccountCreateOpType
+	AccountCreateOpType = 5
 	AccountUpdateOpType
 	AccountWhitelistOpType
 	AccountUpgradeOpType

@@ -55,6 +55,7 @@ var dataObjects = map[OpType]Operation{
 	StakingCreateOpType: &StakingCreateOperation{},
 	StakingUpdateOpType: &StakingUpdateOperation{},
 	StakingClaimOpType:  &StakingClaimOperation{},
+	AccountCreateOpType: &AccountCreateOperation{},
 }
 
 func (op *operationTuple) UnmarshalJSON(data []byte) error {
