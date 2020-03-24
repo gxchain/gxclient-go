@@ -16,9 +16,9 @@ import "github.com/gxchain/gxclient-go"
 ```
 
 # APIs
-- [ ] [Keypair API](#keypair-api)
+- [x] [Keypair API](#keypair-api)
 - [x] [Chain API](#chain-api)
-- [ ] [Faucet API](#faucet-api)
+- [x] [Faucet API](#faucet-api)
 - [x] [Account API](#account-api)
 - [x] [Asset API](#asset-api)
 - [ ] [Contract API](#contract-api)
@@ -27,9 +27,20 @@ import "github.com/gxchain/gxclient-go"
 ## Constructors
 ```
 //init client
-func NewClient(actPriKeyWif, memoPriKeyWif, accountName, url string) (*Client, error) {
+func NewClient(actPriKeyWif, memoPriKeyWif, accountName, url string) (*Client, error)
 ```
 
+## Keypair API
+```
+//Generates the key pair
+func GenerateKeyPair(brainKey string) (*KeyPair, error)
+//Export public key from private key
+func PrivateToPublic(priWif string) (string, error)
+//Check if privateKey is valid or not
+func IsValidPrivate(priWif string) bool
+//Check if publicKey is valid or not
+func IsValidPublic(priWif string) bool
+```
 
 ## Chain API
 ```
@@ -49,6 +60,12 @@ func (api *API) GetObjects(objectIds ...string) ([]json.RawMessage, error)
 func (api *API) GetObject(objectId string) (json.RawMessage, error)
 //send transfer request to entryPoint node
 func (client *Client) Transfer(to, memo, amountAsset, feeSymbol string, broadcast bool) (*types.TransactionResult, error)
+```
+
+## Faucet API
+```
+//register account
+func Register(faucet, account, activeKey, ownerKey, memoKey string) (*types.Transaction, error)
 ```
 
 ## Account API

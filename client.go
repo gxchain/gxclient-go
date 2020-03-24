@@ -3,9 +3,7 @@ package gxclient_go
 import (
 	"bytes"
 	"encoding/hex"
-	_ "encoding/hex"
 	"fmt"
-	_ "fmt"
 	"github.com/pkg/errors"
 	"gxclient-go/api/broadcast"
 	"gxclient-go/api/database"

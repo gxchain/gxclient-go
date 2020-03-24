@@ -12,10 +12,11 @@ import (
 const (
 	testNetHttp = "https://testnet.gxchain.org"
 	testNetWss  = "wss://testnet.gxchain.org"
+	testFaucet  = "https://testnet.faucet.gxchain.org/account/register"
 
 	testAccountName = "cli-wallet-test"
 	testPri         = "5JsvYffKR8n4yNfCk36KkKFCzg6vo5fdBqqDJLavSifXSV9NABo"
-	testPub         = "GXC6kMAnWk1fyjkXUWj4wA7QsnwPAURXGeRAqHDvAqTPCKkiHm8d8"
+	testPub         = "GXC58owosbFrudGVp8VCuMvDWpenx7AZSLwxEtAVqjWeqZ4YVLLWb"
 )
 
 func TestClient_Transfer(t *testing.T) {
