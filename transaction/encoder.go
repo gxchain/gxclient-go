@@ -144,8 +144,9 @@ func (encoder *Encoder) EncodeMoney(s string) error {
 		}
 		amm, _ := strconv.ParseInt(strings.Replace(asset[0], ".", "", -1), 10, 64)
 
-		if amm == math.MaxInt64 {
-			return errors.Errorf("encoder: value cannot be equal or greater than %d", math.MaxInt64)
+		max := int64(math.MaxInt64)
+		if amm == max {
+			return errors.Errorf("encoder: value cannot be equal or greater than %d", max)
 		}
 
 		var perc int
