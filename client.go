@@ -82,6 +82,11 @@ func NewClient(actPriKeyWif, memoPriKeyWif, accountName, url string) (*Client, e
 		client.chainID = chainID
 		client.History = history.NewAPI(1, cc)
 		client.Broadcast = broadcast.NewAPI(1, cc)
+		account, err := client.Database.GetAccount(accountName)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to init account")
+		}
+		client.account = account
 		return client, nil
 	}
 
