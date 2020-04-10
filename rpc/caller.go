@@ -7,7 +7,7 @@ import (
 
 var EmptyParams = []interface{}{}
 
-type APIID uint8
+type APIID string
 
 type Caller interface {
 	Call(api APIID, method string, args []interface{}, reply interface{}) error

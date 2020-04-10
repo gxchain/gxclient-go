@@ -3,13 +3,16 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 	gxc "gxclient-go"
+	"math"
+	"strconv"
 	"testing"
 )
 
 func TestApi_GetChainId(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	chainId, err := client.Database.GetChainId()
 	fmt.Println(chainId)
@@ -17,7 +20,7 @@ func TestApi_GetChainId(t *testing.T) {
 
 // GetDynamicGlobalProperties Gets dynamic global properties of current blockchain
 func TestApi_GetDynamicGlobalProperties(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
 	properties, err := client.Database.GetDynamicGlobalProperties()
@@ -28,7 +31,7 @@ func TestApi_GetDynamicGlobalProperties(t *testing.T) {
 
 // GetBlock return a block by the given block number
 func TestApi_GetBlock(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	block, err := client.Database.GetBlock(22039351)
 	str, _ := json.Marshal(*block)
@@ -36,7 +39,7 @@ func TestApi_GetBlock(t *testing.T) {
 }
 
 func TestApi_GetObjects(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
 	o1 := "1.3.1"
@@ -53,7 +56,7 @@ func TestApi_GetObjects(t *testing.T) {
 }
 
 func TestApi_GetAccounts(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
 	a1 := "nathan"
@@ -73,7 +76,7 @@ func TestApi_GetAccounts(t *testing.T) {
 
 func TestApi_GetAccountBalance(t *testing.T) {
 	accountName := "cli-wallet-test-1"
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	databaseApi := client.Database
 
@@ -91,7 +94,7 @@ func TestApi_GetAccountBalance(t *testing.T) {
 
 func TestApi_GetAccountBalances(t *testing.T) {
 	accountName := "dev"
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	databaseApi := client.Database
 
@@ -107,7 +110,7 @@ func TestApi_GetAccountBalances(t *testing.T) {
 }
 
 func TestApi_GetAccountsByPublicKeys(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
 	pub1 := "GXC6dwwmF98DDrRj3R6ZqvYQanTUcEy6QGrqtbhwpDRGtrd6P9sob" //dev
@@ -128,7 +131,7 @@ func TestApi_GetAccountsByPublicKeys(t *testing.T) {
 }
 
 func TestApi_GetAssets(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	assets, err := client.Database.GetAssets("GXC", "BDB", "NULL")
 	asset, err := client.Database.GetAsset("1.3.100")
@@ -137,19 +140,24 @@ func TestApi_GetAssets(t *testing.T) {
 }
 
 func TestApi_Simple(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
-	require.Nil(t, err)
+	amount, _ := strconv.ParseFloat("4.1", 64)
+	a := decimal.NewFromFloat(amount).Mul(decimal.NewFromFloat(math.Pow10(int(uint8(5)))))
+	b := a.IntPart()
+	println(b)
 
-	tx, err := client.Database.GetTransactionByTxid("647524E8668D3484A764009B0AC90394CF64ED3C")
-	str1, _ := json.Marshal(tx)
-	fmt.Println(string(str1))
-
-	s, err := client.Database.GetStakingPrograms()
-	fmt.Println(s)
-
-	//GetBlockHeader
-	header, _ := client.Database.GetBlockHeader(22039352)
-	str, _ := json.Marshal(*header)
-	fmt.Println(string(str))
+	//client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
+	//require.Nil(t, err)
+	//
+	//tx, err := client.Database.GetTransactionByTxid("647524E8668D3484A764009B0AC90394CF64ED3C")
+	//str1, _ := json.Marshal(tx)
+	//fmt.Println(string(str1))
+	//
+	//s, err := client.Database.GetStakingPrograms()
+	//fmt.Println(s)
+	//
+	////GetBlockHeader
+	//header, _ := client.Database.GetBlockHeader(22039352)
+	//str, _ := json.Marshal(*header)
+	//fmt.Println(string(str))
 
 }

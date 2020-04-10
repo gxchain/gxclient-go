@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/scorum/scorum-go/transport"
 	"golang.org/x/net/websocket"
 )
 
@@ -61,7 +60,7 @@ func (caller *Transport) Call(api rpc.APIID, method string, args []interface{}, 
 	caller.mutex.Lock()
 	if caller.closing || caller.shutdown {
 		caller.mutex.Unlock()
-		return transport.ErrShutdown
+		return rpc.ErrShutdown
 	}
 
 	// increase request id
@@ -77,10 +76,12 @@ func (caller *Transport) Call(api rpc.APIID, method string, args []interface{}, 
 	caller.pending[seq] = c
 	caller.mutex.Unlock()
 
-	request := transport.RPCRequest{
+	apiId, _ := strconv.ParseUint(string(api), 10, 8)
+
+	request := rpc.RPCRequest{
 		Method: "call",
 		ID:     caller.requestID,
-		Params: []interface{}{api, method, args},
+		Params: []interface{}{apiId, method, args},
 	}
 
 	// send Json Rcp request
@@ -113,7 +114,7 @@ func (caller *Transport) input() {
 			return
 		}
 
-		var response transport.RPCResponse
+		var response rpc.RPCResponse
 		if err := json.Unmarshal([]byte(message), &response); err != nil {
 			caller.stop(err)
 			return
@@ -122,7 +123,7 @@ func (caller *Transport) input() {
 				caller.onCallResponse(response, call)
 			} else {
 				//the message is not a pending call, but probably a callback notice
-				var incoming transport.RPCIncoming
+				var incoming rpc.RPCIncoming
 				if err := json.Unmarshal([]byte(message), &incoming); err != nil {
 					caller.stop(err)
 					return
@@ -152,7 +153,7 @@ func (caller *Transport) stop(err error) {
 }
 
 // Call response handler
-func (caller *Transport) onCallResponse(response transport.RPCResponse, call *callRequest) {
+func (caller *Transport) onCallResponse(response rpc.RPCResponse, call *callRequest) {
 	caller.mutex.Lock()
 	delete(caller.pending, response.ID)
 	if response.Error != nil {
@@ -164,7 +165,7 @@ func (caller *Transport) onCallResponse(response transport.RPCResponse, call *ca
 }
 
 // Incoming notice handler
-func (caller *Transport) onNotice(incoming transport.RPCIncoming) error {
+func (caller *Transport) onNotice(incoming rpc.RPCIncoming) error {
 	length := len(incoming.Params)
 
 	if length == 0 {
@@ -216,7 +217,7 @@ func (caller *Transport) Close() error {
 	caller.mutex.Lock()
 	if caller.closing {
 		caller.mutex.Unlock()
-		return transport.ErrShutdown
+		return rpc.ErrShutdown
 	}
 	caller.closing = true
 	caller.mutex.Unlock()

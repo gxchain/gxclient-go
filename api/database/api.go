@@ -98,7 +98,7 @@ func (api *API) GetAccountsByIds(ids ...string) ([]*types.Account, error) {
 // Get an account’s balances in various assets.
 func (api *API) GetAccountBalances(accountID string, assets ...string) ([]*types.AssetAmount, error) {
 	var resp []*types.AssetAmount
-	array := make([]string, len(assets))
+	array := []string{}
 	err := api.call("get_account_balances", []interface{}{accountID, append(array, assets...)}, &resp)
 	return resp, err
 }

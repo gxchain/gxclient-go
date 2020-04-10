@@ -20,10 +20,10 @@ const (
 )
 
 func TestClient_Transfer(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
-	result, err := client.Transfer("nathan", "123", "10.12345 GXC", "GXC", true)
+	result, err := client.Transfer("nathan", "123", "4.01 GXC", "GXC", true)
 	require.NoError(t, err)
 	str, _ := json.Marshal(*result)
 	fmt.Println(string(str))
@@ -33,34 +33,39 @@ func TestClient_StakingCreate(t *testing.T) {
 	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
 	require.Nil(t, err)
 
-	result, err := client.CreateStaking("init0", 10.1, "5", "GXC", true)
+	result, err := client.CreateStaking("init0", 10.1, "1", "GXC", true)
 	require.NoError(t, err)
 	str, _ := json.Marshal(*result)
 	fmt.Println(string(str))
 }
 
 func TestClient_StakingUpdate(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	//owner
 	owner, err := client.Database.GetAccount(testAccountName)
 
+	to := "init0"
+	toAccount, _ := client.Database.GetAccount(to)
+	witness, _ := client.Database.GetWitnessByAccount(toAccount.ID.String())
+
 	stakingObjects, err := client.Database.GetStakingObjects(owner.ID.String())
 	var stakingObject types.StakingObject
 	for _, ob := range stakingObjects {
-		if ob.IsValid == true {
+		if ob.IsValid == true && ob.TrustNode.String() != witness.Id {
 			stakingObject = *ob
+			break
 		}
 	}
 
-	result, err := client.UpdateStaking("init1", stakingObject.ID.String(), "GXC", true)
+	result, err := client.UpdateStaking(to, stakingObject.ID.String(), "GXC", true)
 	require.NoError(t, err)
 	str, _ := json.Marshal(*result)
 	fmt.Println(string(str))
 }
 
 func TestClient_StakingClaim(t *testing.T) {
-	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetWss)
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 	owner, err := client.Database.GetAccount(testAccountName)
 

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/shopspring/decimal"
 	"gxclient-go/api/broadcast"
 	"gxclient-go/api/database"
 	"gxclient-go/api/history"
@@ -52,7 +53,7 @@ func NewClient(actPriKeyWif, memoPriKeyWif, accountName, url string) (*Client, e
 	var cc rpc.CallCloser
 	var err error
 	if strings.HasPrefix(url, "http") || strings.HasPrefix(url, "https") {
-		cc, err = http.NewHttpTransport(url)
+		cc = http.NewTransport(url)
 	} else {
 		cc, err = websocket.NewTransport(url)
 	}
@@ -74,14 +75,14 @@ func NewClient(actPriKeyWif, memoPriKeyWif, accountName, url string) (*Client, e
 	client.memoPriKey = memoKey
 
 	if strings.HasPrefix(url, "http") || strings.HasPrefix(url, "https") {
-		client.Database = database.NewAPI(0, cc)
+		client.Database = database.NewAPI("database", cc)
 		chainID, err := client.Database.GetChainId()
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get database ID")
 		}
 		client.chainID = chainID
-		client.History = history.NewAPI(1, cc)
-		client.Broadcast = broadcast.NewAPI(1, cc)
+		client.History = history.NewAPI("history", cc)
+		client.Broadcast = broadcast.NewAPI("network_broadcast", cc)
 		account, err := client.Database.GetAccount(accountName)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to init account")
@@ -161,7 +162,7 @@ func (client *Client) Transfer(to, memo, amountAsset, feeSymbol string, broadcas
 
 	amountAssets := types.AssetAmount{
 		AssetID: amountSymbol.ID,
-		Amount:  uint64(amount * math.Pow10(int(amountSymbol.Precision))),
+		Amount:  uint64(decimal.NewFromFloat(amount).Mul(decimal.NewFromFloat(math.Pow10(int(amountSymbol.Precision)))).IntPart()),
 	}
 
 	fee, err := client.Database.GetAsset(feeSymbol)
@@ -238,7 +239,7 @@ func (client *Client) CreateStaking(to string, amount float64, programId, feeSym
 	}
 	amountAssets := types.AssetAmount{
 		AssetID: asset.ID,
-		Amount:  uint64(amount * math.Pow10(int(asset.Precision))),
+		Amount:  uint64(decimal.NewFromFloat(amount).Mul(decimal.NewFromFloat(math.Pow10(int(asset.Precision)))).IntPart()),
 	}
 	fee, err := client.Database.GetAsset(feeSymbol)
 	if err != nil {

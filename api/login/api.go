@@ -2,9 +2,10 @@ package login
 
 import (
 	"gxclient-go/rpc"
+	"strconv"
 )
 
-const APIID = 1
+const APIID = "1"
 
 type API struct {
 	caller rpc.Caller
@@ -36,18 +37,24 @@ func (api *API) Login(username, password string) (bool, error) {
 
 func (api *API) Database() (rpc.APIID, error) {
 	var id rpc.APIID
-	err := api.call("database", rpc.EmptyParams, &id)
+	var idUint uint64
+	err := api.call("database", rpc.EmptyParams, &idUint)
+	id = rpc.APIID(strconv.FormatUint(idUint, 10))
 	return id, err
 }
 
 func (api *API) History() (rpc.APIID, error) {
 	var id rpc.APIID
-	err := api.call("history", rpc.EmptyParams, &id)
+	var idUint uint64
+	err := api.call("history", rpc.EmptyParams, &idUint)
+	id = rpc.APIID(strconv.FormatUint(idUint, 10))
 	return id, err
 }
 
 func (api *API) NetworkBroadcast() (rpc.APIID, error) {
 	var id rpc.APIID
-	err := api.call("network_broadcast", rpc.EmptyParams, &id)
+	var idUint uint64
+	err := api.call("network_broadcast", rpc.EmptyParams, &idUint)
+	id = rpc.APIID(strconv.FormatUint(idUint, 10))
 	return id, err
 }
