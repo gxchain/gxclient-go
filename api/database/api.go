@@ -251,3 +251,11 @@ func (api *API) GetTransactionByTxid(txid string) (*types.Transaction, error) {
 
 	return resp, nil
 }
+
+func (api *API) GeTransactionExtByTxid(txid string) (*types.TransactionExt, error) {
+	var resp *types.TransactionExt
+	if err := api.call("get_transaction_by_txid", []interface{}{txid}, &resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

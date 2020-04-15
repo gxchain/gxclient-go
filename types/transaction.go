@@ -13,6 +13,11 @@ type Transaction struct {
 	Signatures     []string   `json:"signatures"`
 }
 
+type TransactionExt struct {
+	Transaction *Transaction `json:"transaction"`
+	BlockNumber uint32       `json:"block_number"`
+}
+
 // MarshalTransaction implements transaction.Marshaller interface.
 func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 	if len(tx.Operations) == 0 {

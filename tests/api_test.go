@@ -3,11 +3,8 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 	gxc "gxclient-go"
-	"math"
-	"strconv"
 	"testing"
 )
 
@@ -140,14 +137,18 @@ func TestApi_GetAssets(t *testing.T) {
 }
 
 func TestApi_Simple(t *testing.T) {
-	amount, _ := strconv.ParseFloat("4.1", 64)
-	a := decimal.NewFromFloat(amount).Mul(decimal.NewFromFloat(math.Pow10(int(uint8(5)))))
-	b := a.IntPart()
-	println(b)
+	//amount, _ := strconv.ParseFloat("4.1", 64)
+	//a := decimal.NewFromFloat(amount).Mul(decimal.NewFromFloat(math.Pow10(int(uint8(5)))))
+	//b := a.IntPart()
+	//println(b)
 
-	//client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
-	//require.Nil(t, err)
-	//
+	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
+	require.Nil(t, err)
+
+	tx, err := client.Database.GeTransactionExtByTxid("0101813c34fb033b7ba7a30c675bfa1b949357d8")
+	str1, _ := json.Marshal(tx)
+	fmt.Println(string(str1))
+
 	//tx, err := client.Database.GetTransactionByTxid("647524E8668D3484A764009B0AC90394CF64ED3C")
 	//str1, _ := json.Marshal(tx)
 	//fmt.Println(string(str1))
