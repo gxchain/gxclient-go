@@ -56,7 +56,7 @@ func TestApi_GetAccounts(t *testing.T) {
 	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
-	a1 := "nathan"
+	a1 := "null-account"
 	a2 := "init0"
 	accs, err := client.Database.GetAccounts(a1, a2)
 	require.Nil(t, err)

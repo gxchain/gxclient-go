@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"gxclient-go/keypair"
+	"gxclient-go/types"
 	"testing"
 )
 
@@ -29,4 +30,11 @@ func Test_IsValidPrivate(t *testing.T) {
 func Test_IsValidPublic(t *testing.T) {
 	bool := keypair.IsValidPublic(testPub)
 	fmt.Println(bool)
+}
+
+func Test_Simple(t *testing.T) {
+	pub1, _ := types.NewPublicKeyFromString("GXC89s7yudddNUAYkYXADHkknJzBHJoQaJSjw8TUGKYFCeqrUFcyY")
+	pub2, _ := types.NewPublicKeyFromString("GXC1111111111111111111111111111111114T1Anm")
+	fmt.Println(pub1)
+	fmt.Println(pub2)
 }

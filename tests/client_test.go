@@ -23,7 +23,7 @@ func TestClient_Transfer(t *testing.T) {
 	client, err := gxc.NewClient(testPri, testPri, testAccountName, testNetHttp)
 	require.Nil(t, err)
 
-	result, err := client.Transfer("nathan", "ceshi 一下", "4.01 GXC", "GXC", true)
+	result, err := client.Transfer("null-account", "ceshi 一下", "4.01 GXC", "GXC", true)
 	require.NoError(t, err)
 	str, _ := json.Marshal(*result)
 	fmt.Println(string(str))

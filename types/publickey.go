@@ -34,6 +34,11 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 		return errors.Annotate(err, "Unmarshal")
 	}
 
+	//兼容空密钥账户
+	if key == "GXC1111111111111111111111111111111114T1Anm" {
+		return nil
+	}
+
 	pub, err := NewPublicKeyFromString(key)
 	if err != nil {
 		return errors.Annotate(err, "NewPublicKeyFromString")
@@ -73,6 +78,10 @@ func (p PublicKey) ToECDSA() *ecdsa.PublicKey {
 // public key can produce.
 func (p PublicKey) MaxSharedKeyLength() int {
 	return (p.key.ToECDSA().Curve.Params().BitSize + 7) / 8
+}
+
+func (p PublicKey) IsNul() bool {
+	return p.key == nil
 }
 
 //NewPublicKey creates a new PublicKey from string

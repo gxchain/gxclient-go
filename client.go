@@ -175,22 +175,17 @@ func (client *Client) Transfer(to, memo, amountAsset, feeSymbol string, broadcas
 	}
 
 	var memoOb = &types.Memo{}
-
-	var keys []*types.PublicKey
-	for k := range client.account.Active.KeyAuths {
-		keys = append(keys, k)
-	}
-
-	memoOb.From = *keys[0]
-	memoOb.To = toAccount.Options.MemoKey
-	memoOb.Nonce = types.GetNonce()
-	if len(memo) > 0 {
+	//memoKey为空时不生成memo
+	if len(memo) < 0 || toAccount.Options.MemoKey.IsNul() || client.account.Options.MemoKey.IsNul() {
+		memoOb = nil
+	} else {
+		memoOb.From = client.account.Options.MemoKey
+		memoOb.To = toAccount.Options.MemoKey
+		memoOb.Nonce = types.GetNonce()
 		err := memoOb.Encrypt(client.memoPriKey, memo)
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		memoOb = nil
 	}
 
 	op := types.NewTransferOperation(types.MustParseObjectID(client.account.ID.String()), types.MustParseObjectID(toAccount.ID.String()), amountAssets, feeAssets, memoOb)
